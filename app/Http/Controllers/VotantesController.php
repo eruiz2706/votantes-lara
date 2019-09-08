@@ -9,6 +9,11 @@ use Validator;
 use Log;
 class VotantesController extends Controller
 {
+
+  public function __construct(){
+    header('Access-Control-Allow-Origin: *');
+  }
+
   //guardar un nuevo votante
   public function guardar(Request $request){
     
