@@ -15,7 +15,7 @@ class CreateCensoTable extends Migration
     {
         Schema::create('censo', function (Blueprint $table) {
             $table->increments('id');
-            $table->varchar('nuid',30);
+            $table->string('nuid',30);
             $table->string('departamento',300)->nullable();
             $table->string('municipio',300)->nullable();
             $table->string('puesto',300)->nullable();
