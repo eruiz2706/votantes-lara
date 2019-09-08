@@ -35,4 +35,4 @@ var base_url = '<?php echo url('/'); ?>';
 
 
 </script>
-<script src="{{ asset('js/app.js') }}"></script>
+<script src="http://localhost/votantes/public/js/app.js"></script>
