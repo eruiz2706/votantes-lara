@@ -11,7 +11,7 @@
   
   <!--<link rel="stylesheet" href="{{ asset('plugins/ionicons/css/ionicons.min.css') }}">-->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <link rel="stylesheet" href="https://adminlte.io/themes/dev/AdminLTE/plugins/plugins/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://adminlte.io/themes/dev/AdminLTE/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="http://localhost/votantes/public/plugins/ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="http://localhost/votantes/public/plugins/social/social.css">
   <link rel="stylesheet" href="http://localhost/votantes/public/plugins/select2/select2.min.css">
