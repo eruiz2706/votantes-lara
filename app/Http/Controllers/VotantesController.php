@@ -11,7 +11,7 @@ class VotantesController extends Controller
 {
 
   public function __construct(){
-    header('Access-Control-Allow-Origin: *');
+    
   }
 
   //guardar un nuevo votante
