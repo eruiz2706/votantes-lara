@@ -9,20 +9,21 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
+  <!--<link rel="stylesheet" href="{{ asset('plugins/ionicons/css/ionicons.min.css') }}">-->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <link rel="stylesheet" href="http://localhost/votantes/public/plugins/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{{ asset('plugins/ionicons/css/ionicons.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/social/social.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/select2/select2.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/sweetalert/sweetalert.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/fullcalendar/fullcalendar.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/fullcalendar/fullcalendar.print.css') }}" media="print">
-  <link rel="stylesheet" href="{{ asset('rsc/css/adminlte.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('rsc/css/loader-1.css') }}">
-  <link rel="stylesheet" href="{{ asset('rsc/css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('rsc/css/courses.css') }}">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/social/social.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/select2/select2.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/toastr/toastr.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/sweetalert/sweetalert.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/fullcalendar/fullcalendar.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/fullcalendar/fullcalendar.print.css" media="print">
+  <link rel="stylesheet" href="http://localhost/votantes/rsc/css/adminlte.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/rsc/css/loader-1.css">
+  <link rel="stylesheet" href="http://localhost/votantes/rsc/css/style.css">
+  <link rel="stylesheet" href="http://localhost/votantes/rsc/css/courses.css">
 
-  <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
+  <link rel="stylesheet" href="http://localhost/votantes/plugins/morris/morris.css">
 </head>
   
