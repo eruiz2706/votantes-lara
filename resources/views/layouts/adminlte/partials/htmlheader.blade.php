@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#ffffff">
   
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <link rel="stylesheet" href="http://134.209.114.233/votantes/public/plugins/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://localhost/votantes/public/plugins/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" href="{{ asset('plugins/ionicons/css/ionicons.min.css') }}">
   <link rel="stylesheet" href="{{ asset('plugins/social/social.css') }}">
   <link rel="stylesheet" href="{{ asset('plugins/select2/select2.min.css') }}">
