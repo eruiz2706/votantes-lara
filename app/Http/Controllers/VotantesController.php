@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 use Validator;
 use Log;
-
+header("Access-Control-Allow-Origin: *");
 class VotantesController extends Controller
 {
   //guardar un nuevo votante
