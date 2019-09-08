@@ -1,3 +1,4 @@
+<?php header("Access-Control-Allow-Origin: *"); ?>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
