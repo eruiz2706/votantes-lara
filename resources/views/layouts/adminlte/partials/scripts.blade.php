@@ -28,7 +28,7 @@ window.onload = function() {
   loaders.style.display = "none";
 };
 //var base_url = '<?php echo url('/'); ?>';
-var base_url = 'http://localhost/votantes/public/';
+var base_url = 'http://localhost/votantes/public';
 /*$.getJSON({url:base_url+"/trans",async: false},function(result){
   window.translations =result;
 });*/
