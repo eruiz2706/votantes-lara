@@ -9,7 +9,7 @@
             <div class="text-center">
             <a href="#" v-on:click.prevent="setRedirect('perfil')">
                 <img class="profile-user-img img-fluid img-circle"
-                    src="{{ URL::asset('img/logo.jpg') }}"
+                    src="http://localhost/votantes/public/img/logo.jpg"
                     alt="User avatar">
             </a>
             </div>
@@ -66,7 +66,7 @@
 
         <div class="card card-widget card-nav-user">
               <div class="card-body">
-                <img class="img-fluid pad" src="{{ URL::asset('img/marcacion.jpg') }}" alt="Photo">
+                <img class="img-fluid pad" src="http://localhost/votantes/public/img/marcacion.jpg" alt="Photo">
               </div>
               
             </div>
