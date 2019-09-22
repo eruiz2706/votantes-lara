@@ -13,7 +13,7 @@
       <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <div class="user-block">
-              <img class="img-circle img-bordered-sm"  src="http://localhost/votantes/public/img/logo.jpg" alt="User avatar">
+              <img class="img-circle img-bordered-sm"  src="{{ asset('img/logo.jpg') }}" alt="User avatar">
               <i class="fa fa-chevron-down" style="padding-top:10px;padding-left:10px;" ></i>
             </div>
           </a>

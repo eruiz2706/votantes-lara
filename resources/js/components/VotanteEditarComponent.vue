@@ -2,7 +2,7 @@
 <div>
     <div class="row">
       <div class="col-sm-6">
-        <h3>Nuevo Votante</h3>
+        <h3>Editar Votante</h3>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
@@ -102,13 +102,12 @@
                   </div>
                 </div>
               </div>
-
             </div>
             <!-- /.card-body -->
 
               <div class="card-footer">
-                <button type="button" class="btn btn-outline btn-primary" :disabled="loaderGuardar" v-on:click.prevent='guardar()'>
-                  Guardar
+                <button type="button" class="btn btn-outline btn-primary" :disabled="loaderGuardar" v-on:click.prevent='actualizar()'>
+                  Actualizar
                   <i style='font-size:20px' class="fa fa-spinner fa-spin fa-loader" v-if="loaderGuardar"></i>
                 </button>
               </div>
@@ -121,12 +120,13 @@
 <script>
 export default {
   mounted() {
-
+    
   },created : function(){
     this.baseUrl=base_url;
     this.getLideres();
     this.getBarrios();
     this.getPuestos();
+    this.getVotante(this.$route.params.id);
   },data: function () {
     return {
       baseUrl : '',
@@ -139,19 +139,20 @@ export default {
       listaMesas:[],
     }
   },methods : {
-    guardar:function(){
+    actualizar:function(){
       this.loaderGuardar=true;
-      var url =this.baseUrl+'/votantes/guardar';
+      var url =this.baseUrl+'/votantes/actualizar';
       let inst=this;
       axios.post(url,this.objVotante).then(response =>{
         this.loaderGuardar=false;
         this.errores=[];
         this.objVotante={'documento':'','nombre':'','telefono':'','direccion':'','barrio':'','lider':false,'idlider':'','publicidad':false,'puesto_id':'','mesa':''};
-        this.getLideres();
         swal({
             title:response.data.message,
             text:response.data.message2,
             type: "success"
+        },function(){
+          inst.volver();
         });
       }).catch(error =>{
         this.loaderGuardar=false;
@@ -166,6 +167,22 @@ export default {
             "timeOut": "3500"
           });
         }
+      });
+    },
+    volver:function(){
+        this.$router.push({
+          name: "votante"
+        });
+    },
+    getVotante:function(id){
+      var url =this.baseUrl+'/votantes/editarvotante';
+      let inst=this;
+      this.listaLideres=[];
+      axios.post(url,{id:id}).then(response =>{
+        //this.listaLideres=response.data.listaLideres;
+        this.cargaMesas(response.data.votante.puesto_id);
+        this.objVotante=response.data.votante;
+      }).catch(error =>{
       });
     },
     getLideres:function(){

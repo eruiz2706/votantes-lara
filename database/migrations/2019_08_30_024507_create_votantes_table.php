@@ -24,6 +24,9 @@ class CreateVotantesTable extends Migration
             $table->integer('idlider')->unsigned()->nullable();
             $table->integer('barrio_id')->unsigned()->index();
             $table->foreign('barrio_id')->references('id')->on('barrios')->onDelete('cascade');
+            $table->integer('puesto_id')->unsigned()->nullable();
+            $table->foreign('puesto_id')->references('id')->on('puestos')->onDelete('cascade');
+            $table->string('mesa',15)->nullable();
             $table->timestamps();
         });
     }

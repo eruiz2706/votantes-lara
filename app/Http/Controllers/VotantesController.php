@@ -14,165 +14,7 @@ class VotantesController extends Controller
     
   }
 
-  //guardar un nuevo votante
-  public function guardar(Request $request){
-    
-    $validator =Validator::make($request->all(),[
-        'documento' =>'required|integer|unique:votantes',
-        'nombre' =>'required|min:5',
-        'telefono' =>'required|min:5',
-        'direccion' =>'required|min:5'
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'errors' => $validator->messages(),
-        ], 400);
-    }
-    
-    
-    DB::beginTransaction();
-    try{
-
-      $idlider = ($request->lider) ? null : $request->idlider;
-      
-      $idvotante=DB::table('votantes')->insertGetId([
-        'documento'=>$request->documento,
-        'nombre'=>$request->nombre,
-        'telefono'=>$request->telefono,
-        'direccion'=>$request->direccion,
-        'barrio_id'=>$request->barrio,
-        'lider'=>$request->lider,
-        'idlider'=>$idlider
-      ]);
-
-     
-      DB::commit();
-      return response()->json([
-          'message' => 'Registro creado correctamente!',
-          'message2' => 'Click para continuar!'
-      ]);
-    }
-    catch(\Exception $e){
-        Log::info('creacion votante : '.$e->getMessage());
-        DB::rollback();
-        return response()->json([
-            'error' =>'Hubo una inconsistencias al intentar crear el registro'.$e->getMessage()
-        ], 400);
-    }
-  }
-
-  public function getLideres(Request $request){
-    $lideres   =DB::select("select
-                            nombre,id,documento
-                            from votantes
-                            where lider = :lider
-                            order by nombre",
-                ['lider'=>true]);
-
-    return response()->json([
-        'listaLideres' => $lideres,
-    ]);
-  }
-
-  public function getListaVotantes(Request $request){
-    $votantes   =DB::select("select
-                              v.documento,v.nombre,v.telefono,v.direccion,b.nombre as nombre_barrio,v.lider,v.idlider,l.nombre as nombre_lider,v.publicidad
-                              from votantes v
-                              left join barrios b on(v.barrio_id=b.id)
-                              left join votantes l on(v.idlider=l.id)");
-
-    return response()->json([
-        'listaVotantes' => $votantes,
-    ]);
-  }
-
-  public function getListaLideres(Request $request){
-    $listaLideres   =DB::select("select
-                                  l.documento,l.nombre,l.telefono,l.direccion,l.nombre_barrio,
-                                  sum(cantidadvotantes) as cantidadvotantes,sum(cantpublicidad) as cantpublicidad
-                                  from(
-                                  select
-                                  'votantes_lider' as tipo,l.documento,l.nombre,l.telefono,l.direccion,b.nombre as nombre_barrio,
-                                  count(v.id) as cantidadvotantes,sum(case when v.publicidad=true then 1 else 0 end) as  cantpublicidad
-                                  from votantes l
-                                  left join votantes v on(l.id=v.idlider)
-                                  left join barrios b on(l.barrio_id=b.id)
-                                  where l.lider = :lider
-                                  group by 
-                                  l.documento,l.nombre,l.telefono,l.direccion,b.nombre
-                                  union
-                                  select 
-                                  'lider' as tipo,l.documento,l.nombre,l.telefono,l.direccion,b.nombre as nombre_barrio,
-                                  count(l.id) as cantidadvotantes,sum(case when l.publicidad=true then 1 else 0 end) as cantpublicidad
-                                  from votantes l
-                                  left join barrios b on(l.barrio_id=b.id)
-                                  where l.lider = :lider
-                                  group by 
-                                  l.documento,l.nombre,l.telefono,l.direccion,b.nombre
-                                  ) as l
-                                  group by l.documento,l.nombre,l.telefono,l.direccion,l.nombre_barrio
-                                  ",
-                ['lider'=>true]);
-
-    return response()->json([
-        'listaLideres' => $listaLideres
-    ]);
-  }
-
-  public function getListaBarrios(Request $request){
-    $listaBarrios   =DB::select("select id,nombre,comuna
-                                  from barrios
-                                  order by nombre asc");
-
-    return response()->json([
-        'listaBarrios' => $listaBarrios,
-    ]);
-  }
-
-  public function getCenso(Request $request){
-    $censo  =DB::select("select nuid,departamento,municipio,puesto,direccion,mesa
-                          from censo
-                          where
-                          nuid =:nuid"
-                     ,['nuid'=>$request->documento]);
-
-    /*if(empty($censo)){
-      return view('layouts.errors.not_page');
-    }*/
-
-    return response()->json([
-      'censo' => $censo
-    ]);
-    
-  }
-
-  public function getInfoGrafLider(Request $request){
-    $votantesInd = DB::select("select count(v.id) as independientes
-                          from votantes v
-                          where idlider is null and lider=false");
-                        
-    if(empty($votantesInd)){
-      $votantesInd =0;
-    }else{
-      $votantesInd = $votantesInd[0]->independientes;
-    }
-
-    $votantesTotales = DB::select("select count(v.id) as totales
-                                  from votantes v");
-
-    if(empty($votantesTotales)){
-      $votantesTotales =0;
-    }else{
-      $votantesTotales = $votantesTotales[0]->totales;
-    }
-
-    return response()->json([
-        'votantesInd' => 10,
-        'votantesTotales' => 15,
-    ]);
-  }
-
+  /*Informacion Estadisticas de campaña*/
   public function getDashboard(Request $request){
     $dataLideres = DB::select("select
                                 sum(lideres) as lideres,sum(totales) as totales
@@ -197,7 +39,7 @@ class VotantesController extends Controller
                               from(
                                 select count(v.id) as censo,0 as totales
                                 from votantes v
-                                  inner join censo c on(v.documento=c.nuid)
+                                  where puesto_id is not null
                                 union
                                 select 0 as censo,count(v.id) as totales
                                 from votantes v
@@ -249,35 +91,348 @@ class VotantesController extends Controller
   }
 
   public function getDashboard2(Request $request){
+
+    $dataMesas = DB::select("select
+                              sum(convotacion) as convotacion,sum(totalmesas) as totalmesas
+                              from( 
+                                select
+                                  count(v.id) as convotacion,0 as totalmesas
+                                from(
+                                  select p.id,v.mesa
+                                  from votantes v
+                                  inner join puestos p on(v.puesto_id=p.id)
+                                  where v.puesto_id is not null
+                                  group by p.id,v.mesa
+                                ) as v
+                                union
+                                select 0 as convotantes,sum(p.mesas) as totalmesas
+                                from puestos p
+                              ) as f");
+
+    $convotantes = 0;                           
+    $sinvotantes = 0;
+    if(!empty($dataMesas)){
+      $convotantes = $dataMesas[0]->convotacion;                           
+      $sinvotantes = $dataMesas[0]->totalmesas - $dataMesas[0]->convotacion;
+    }
+
     
    $dataCenso = DB::select("select
-                                  nombre,sum(cantidad) as cantidad
+                                  id,nombre,sum(cantidad) as cantidad
                                   from(
-                                    select c.puesto as nombre,count(v.id) as cantidad
+                                    select p.id,p.nombre as nombre,count(v.id) as cantidad
                                     from votantes v
-                                    inner join censo c on(v.documento=c.nuid)
-                                    group by c.puesto
+                                    left join puestos p on(v.puesto_id=p.id)
+                                    where v.puesto_id is not null
+                                    group by p.id,p.nombre
                                   ) as v
-                                  group by nombre  
-                                  order by sum(cantidad) desc
-                              ");
-
-    foreach($dataCenso as $data){
-
-      $dataMesas = DB::select("select 
-                                  c.puesto,c.mesa,count(v.id) as cantidad
-                                from votantes v
-                                inner join censo c on(v.documento=c.nuid)
-                                where c.puesto=:puesto
-                                group by c.puesto,c.mesa
-                                order by count(v.id) desc
-                        ",['puesto'=>$data->nombre]);
-      $data->mesas=$dataMesas;
-    } 
-
+                                  group by id,nombre  
+                                  order by sum(cantidad) desc");
     return response()->json([
-        'grafCenso' => $dataCenso
+        'grafCenso' => $dataCenso,
+        'grafMesas' => [
+          'convotantes' => $convotantes,
+          'sinvotantes' => $sinvotantes
+        ]
     ]);
   }
+
+  //listado de lideres
+  public function getLideres(Request $request){
+    $lideres   =DB::select("select
+                            nombre,id,documento
+                            from votantes
+                            where lider = :lider
+                            order by nombre",
+                ['lider'=>true]);
+
+    return response()->json([
+        'listaLideres' => $lideres,
+    ]);
+  }
+
+  //listado de barrios
+  public function getBarrios(Request $request){
+    $listaBarrios   =DB::select("select id,nombre,comuna
+                                  from barrios
+                                  order by nombre asc");
+
+    return response()->json([
+        'listaBarrios' => $listaBarrios,
+    ]);
+  }
+
+  //listado de puestos
+  public function getPuestos(Request $request){
+    $listaPuestos   =DB::select("select id,nombre,mesas
+                                  from puestos
+                                  order by nombre asc");
+
+    return response()->json([
+        'listaPuestos' => $listaPuestos,
+    ]);
+  }
+
+  //listado de puestos
+  public function getMesas(Request $request){
+    $resultado = DB::select("select mesas
+                          from puestos
+                          where id=:id",['id'=>$request->id]);
+        
+    $mesas = 0;
+    if(!empty($resultado)){
+      $mesas = $resultado[0]->mesas;    
+    }
+    
+    $listaMesas= [];
+    if($mesas > 0){
+      for($contador=1;$contador<=$mesas;$contador++){
+        $listaMesas[]=['id'=>$contador,'nombre'=>'Mesa '.$contador];
+      }
+    }
+
+    return response()->json([
+      'listaMesas' => $listaMesas,
+    ]);
+  }
+  
+  //guardar un nuevo votante
+  public function guardar(Request $request){
+    
+    $validator =Validator::make($request->all(),[
+        'documento' =>'required|integer|unique:votantes',
+        'nombre' =>'required|min:5',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'errors' => $validator->messages(),
+        ], 400);
+    }
+    
+    
+    DB::beginTransaction();
+    try{
+
+      $idlider = ($request->lider) ? null : $request->idlider;
+      $puesto_id = ($request->puesto_id=='') ? null : $request->puesto_id;
+      
+      $idvotante=DB::table('votantes')->insertGetId([
+        'documento'=>$request->documento,
+        'nombre'=>$request->nombre,
+        'telefono'=>$request->telefono,
+        'direccion'=>$request->direccion,
+        'barrio_id'=>$request->barrio,
+        'lider'=>$request->lider,
+        'idlider'=>$idlider,
+        'publicidad'=>$request->publicidad,
+        'puesto_id'=>$puesto_id,
+        'mesa'=>$request->mesa
+      ]);
+     
+      DB::commit();
+      return response()->json([
+          'message' => 'Registro creado correctamente!',
+          'message2' => 'Click para continuar!'
+      ]);
+    }
+    catch(\Exception $e){
+        //Log::info('creacion votante : '.$e->getMessage());
+        DB::rollback();
+        return response()->json([
+            'error' =>'Hubo una inconsistencias al intentar crear el registro'
+        ], 400);
+    }
+  }
+
+  //mesas que hacen parte de un puesto de votacion con votantes
+  public function getVotacionPuesto(Request $request){
+        $dataPuesto = DB::select("select 
+                                  v.mesa,count(v.id) as cantidad
+                                  from votantes v
+                                  where v.puesto_id=:puesto_id
+                                  group by v.mesa
+                                  order by v.mesa
+                                  ",['puesto_id'=>$request->id]);
+      return response()->json([
+        'dataPuesto' => $dataPuesto,
+      ]);
+  }
+
+  //listado de votantes
+  public function getListaVotantes(Request $request){
+    $votantes   =DB::select("select
+                              v.id,v.documento,v.nombre,v.telefono,v.direccion,b.nombre as nombre_barrio,v.lider,v.idlider,l.nombre as nombre_lider,v.publicidad,p.nombre as puesto,v.mesa
+                              from votantes v
+                              left join barrios b on(v.barrio_id=b.id)
+                              left join votantes l on(v.idlider=l.id)
+                              left join puestos p on(v.puesto_id=p.id)");
+
+    return response()->json([
+        'listaVotantes' => $votantes,
+    ]);
+  }
+
+  //lista de lideres
+  public function getListaLideres(Request $request){
+    $listaLideres   =DB::select("select
+                                    l.documento,l.nombre,l.telefono,l.direccion,l.nombre_barrio,
+                                    sum(cantidadvotantes) as cantidadvotantes,sum(cantpublicidad) as cantpublicidad,id,sum(cantcenso) as cantcenso
+                                  from(
+                                    select
+                                      'votantes_lider' as tipo,l.documento,l.nombre,l.telefono,l.direccion,b.nombre as nombre_barrio,
+                                      count(v.id) as cantidadvotantes,sum(case when v.publicidad=true then 1 else 0 end) as  cantpublicidad,l.id,
+                                      sum(case when v.puesto_id is null then 0 else 1 end) as cantcenso
+                                    from votantes l
+                                    left join votantes v on(l.id=v.idlider)
+                                    left join barrios b on(l.barrio_id=b.id)
+                                    where l.lider = :lider
+                                    group by 
+                                    l.documento,l.nombre,l.telefono,l.direccion,b.nombre,l.id
+                                    union
+                                    select 
+                                      'lider' as tipo,l.documento,l.nombre,l.telefono,l.direccion,b.nombre as nombre_barrio,
+                                      count(l.id) as cantidadvotantes,sum(case when l.publicidad=true then 1 else 0 end) as cantpublicidad,l.id,
+                                      sum(case when l.puesto_id is null then 0 else 1 end) as cantcenso
+                                    from votantes l
+                                    left join barrios b on(l.barrio_id=b.id)
+                                    where l.lider = :lider
+                                    group by 
+                                    l.documento,l.nombre,l.telefono,l.direccion,b.nombre,l.id
+                                  ) as l
+                                  group by l.documento,l.nombre,l.telefono,l.direccion,l.nombre_barrio,l.id",
+                                  ['lider'=>true]);
+
+    return response()->json([
+        'listaLideres' => $listaLideres
+    ]);
+  }
+
+  public function getVotantesLider(Request $request){
+    $dataVotantes  =DB::select("select v.id,v.documento,v.nombre,v.telefono,v.direccion,b.nombre as barrio,p.nombre as puesto,v.mesa
+                          from votantes v
+                          left join barrios b on(v.barrio_id=b.id)
+                          left join puestos p on(v.puesto_id=p.id)
+                          where v.idlider = :idlider or v.id = :idlider
+                          order by idlider desc",['idlider'=>$request->id]);
+
+    return response()->json([
+      'dataVotantes' => $dataVotantes
+    ]);
+  } 
+
+  public function getVotantesSinPuesto(Request $request){
+    $dataSinpuesto  =DB::select("select v.id,v.documento,v.nombre,v.telefono
+                                from votantes v
+                                where v.puesto_id is null
+                                ");
+    return response()->json([
+      'dataSinpuesto' => $dataSinpuesto
+    ]);
+  }
+
+  public function deleteVotante(Request $request){
    
+    ############guardar datos ########
+    DB::beginTransaction();
+    try{
+      DB::table('votantes')->where('idlider',$request->id)->update([
+        'idlider'=>null
+      ]);
+
+      DB::table('votantes')->where('id','=',$request->id)->delete();
+
+      DB::commit();
+      return response()->json([
+          'message' => 'Se elimino el votante correctamente!',
+          'message2' => 'Click para continuar!'
+      ]);
+    }
+    catch(\Exception $e){
+        DB::rollback();
+        return response()->json([
+            'error' =>'Hubo una inconsistencias al intentar realizar el proceso'
+        ], 400);
+    }
+  }
+
+  public function editarVotante(Request $request){
+    $votante   =DB::select("select 
+                            id,documento,nombre,telefono,direccion,lider,publicidad,idlider,barrio_id as barrio,puesto_id,mesa
+                            from votantes
+                            where id = :id",
+                          ['id'=>$request->id])[0];
+    return response()->json([
+      'votante' => $votante
+    ]);
+  }
+
+  public function actualizar(Request $request){
+    
+    $validator =Validator::make($request->all(),[
+        'nombre' =>'required|min:5',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'errors' => $validator->messages(),
+        ], 400);
+    }
+
+    $validaDocum = DB::select("select id
+                              from votantes 
+                              where documento =:documento and id<>:id
+                          ",['documento'=>$request->documento,'id'=>$request->id]);
+    if(!empty($validaDocum)){
+      return response()->json([
+        'error' => 'El documento ya se encuentra registrado a otro votante'
+    ], 400);
+    }
+    
+    DB::beginTransaction();
+    try{
+
+      $idlider = ($request->lider) ? null : $request->idlider;
+      $puesto_id = ($request->puesto_id=='') ? null : $request->puesto_id;
+      
+      DB::table('votantes')->where('id',$request->id)->update([
+        'documento'=>$request->documento,
+        'nombre'=>$request->nombre,
+        'telefono'=>$request->telefono,
+        'direccion'=>$request->direccion,
+        'barrio_id'=>$request->barrio,
+        'lider'=>$request->lider,
+        'idlider'=>$idlider,
+        'publicidad'=>$request->publicidad,
+        'puesto_id'=>$puesto_id,
+        'mesa'=>$request->mesa
+      ]);
+
+     
+      DB::commit();
+      return response()->json([
+          'message' => 'Registro actualizado correctamente!',
+          'message2' => 'Click para continuar!'
+      ]);
+    }
+    catch(\Exception $e){
+        DB::rollback();
+        return response()->json([
+            'error' =>'Hubo una inconsistencias al intentar crear el registro'.$e->getMessage()
+        ], 400);
+    }
+  }
+
+  public function getVotantesconMesas(Request $request){
+    $dataMesas   =DB::select("select
+                                p.id,p.nombre as puesto,v.mesa,count(v.id) as cantidad
+                                from votantes v
+                                inner join puestos p on(v.puesto_id=p.id)
+                                where v.puesto_id is not null
+                                group by p.id,p.nombre,v.mesa
+                                order by p.nombre,v.mesa asc");
+    return response()->json([
+      'dataMesas' => $dataMesas
+    ]);
+  }
 }

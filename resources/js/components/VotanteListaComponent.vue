@@ -1,54 +1,5 @@
 <template>
 <div>
-    <div class="modal fade" id="modal_censo" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class='modal-header'>
-            <h5 class="modal-title">
-              Datos Censo
-            </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div>
-          <div class="modal-body table-responsive p-0">
-            <div class="alert alert-warning alert-dismissible" v-if="!this.validaCenso">
-             <h5><i class="icon fa fa-warning"></i> Alerta!</h5>
-              El votante no tiene registro de censo
-            </div>
-
-            <table class="table" v-if="this.validaCenso">
-                <tbody><tr>
-                  <th style="width:50%">NUID:</th>
-                  <td v-text="objCenso.nuid"></td>
-                </tr>
-                <tr>
-                  <th>DEPARTAMENTO</th>
-                  <td v-text="objCenso.departamento"></td>
-                </tr>
-                <tr>
-                  <th>MUNICIPIO</th>
-                  <td v-text="objCenso.municipio"></td>
-                </tr>
-                <tr>
-                  <th>PUESTO</th>
-                  <td v-text="objCenso.puesto"></td>
-                </tr>
-                <tr>
-                  <th>DIRECCION</th>
-                  <td v-text="objCenso.direccion"></td>
-                </tr>
-                <tr>
-                  <th>MESA</th>
-                  <td v-text="objCenso.mesa"></td>
-                </tr>
-                </tbody>
-              </table>
-          </div>
-      </div>
-    </div>
-    </div>
-
     <div class="row">
       <div class="col-sm-6">
         <h3>Votantes</h3>
@@ -91,16 +42,22 @@
                 <th>Telefono</th>
                 <th>Direccion</th>
                 <th>Barrio</th>
-                <th>Publicidad en casa</th>
+                <th>Publicidad</th>
                 <th>Lider</th>
-                <th>Nombre Lider</th>
+                <th>Puesto</th>
+                <th>Mesa</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="lista in pagination.datafilter">
                 <td>
-                  <button type="button" class="btn btn-tool"><i class="fa fa-edit" style="font-size: 16px;"></i></button>
-                  <button type="button" class="btn btn-tool"><i class="fa fa-eye" style="font-size: 16px;" v-on:click.prevent="openCenso(lista.documento)"></i></button>
+                  <button type="button" class="btn btn-tool" v-on:click.prevent="confirmarBorradoVotante(lista.id,lista.documento)">
+                    <i class="fa fa-trash" style="font-size: 16px;"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" v-on:click.prevent="editarVotante(lista.id)">
+                    <i class="fa fa-edit" style="font-size: 16px;"></i>
+                  </button>
+
                 </td>
                 <td v-text="lista.documento"></td>
                 <td v-text="lista.nombre"></td>
@@ -110,10 +67,28 @@
                 <td>
                   <span class="badge badge-info" v-if="lista.publicidad">SI</span>
                 </td>
-                <td><span class="badge badge-success" v-if="lista.lider"><i class="fa fa-check"></i></span></td>
-                <td v-text="lista.nombre_lider"></td>
+                <td>
+                  <span class="badge badge-success" v-if="lista.lider"><i class="fa fa-check"></i></span>
+                  <span v-text="lista.nombre_lider"></span>
+                </td>
+                <td v-text="lista.puesto"></td>
+                <td v-text="lista.mesa"></td>
               </tr>
             </tbody>
+            <thead>
+              <tr>
+                <th>Acciones</th>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Telefono</th>
+                <th>Direccion</th>
+                <th>Barrio</th>
+                <th>Publicidad</th>
+                <th>Lider</th>
+                <th>Puesto</th>
+                <th>Mesa</th>
+              </tr>
+            </thead>
           </table>
         </div>
         <!-- /.card-body -->
@@ -162,12 +137,12 @@ export default {
         data : [],
         datafilter : [],
         search : '',
-        keys : ["documento","nombre","telefono","direccion","nombre_barrio"]
+        keys : ["documento","nombre","telefono","direccion","nombre_barrio","puesto","nombre_lider"]
       }
     }
   },methods : {
     getListaVotantes:function(){
-      var url =this.baseUrl+'/votantes/lista';
+      var url =this.baseUrl+'/votantes/votantes';
       let inst=this;
       this.listaVotantes=[];
       axios.post(url,this.objVotante).then(response =>{
@@ -177,19 +152,46 @@ export default {
       }).catch(error =>{
       });
     },
-    openCenso:function(documento){
-      $('#modal_censo').modal('show');
-      var url =this.baseUrl+'/votantes/censo';
-      let inst=this;
-      this.objCenso = {};
-      this.validaCenso = false;
-      axios.post(url,{documento:documento}).then(response =>{
-        if(response.data.censo[0]){
-          this.objCenso =response.data.censo[0];
-          this.validaCenso = true;
-        }
-      }).catch(error =>{
+    confirmarBorradoVotante:function(id,documento){
+      let inst = this;
+      swal({
+        title: "",
+        text: "Seguro deseas borrar el votante documento: "+documento,
+        type: "info",
+        showCancelButton: true,
+        confirmButtonClass: "btn-success",
+        confirmButtonText: "Aceptar",
+        closeOnConfirm: true
+      },
+      function(){
+        inst.borradoVotante(id);
       });
+    },
+    borradoVotante:function(id){
+      let inst = this;
+      var url =this.baseUrl+'/votantes/borrarvotante';
+      axios.post(url,{id:id}).then(response =>{
+          swal({
+              title:response.data.message,
+              text:response.data.message2,
+              type: "success"
+          });
+          this.getListaVotantes();
+      }).catch(error =>{
+          if(error.response.data.error){
+            toastr.error(error.response.data.error,'',{
+                "timeOut": "2500"
+            });
+          }
+      });
+    },
+    editarVotante:function(id){
+        this.$router.push({
+          name: "editar-votante",
+          params:{
+            id: id,
+          }
+        });
     },
     /*metodos de paginacion de tablas*/
     changePage : function (page){

@@ -13,7 +13,7 @@
     <div class="wrapper" id="v-app">
     <!--aqui va mainheader-->
 
-    <div class="img-bannerhome" style="background-image: url('http://localhost/votantes/public/img/counter_background.jpg');"></div>
+    <div class="img-bannerhome" style="background-image: url('img/counter_background.jpg');"></div>
 
 
     <!-- Content Wrapper. Contains page content -->

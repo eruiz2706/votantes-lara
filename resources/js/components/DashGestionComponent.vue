@@ -1,5 +1,36 @@
 <template>
 <div>
+    <div class="modal fade" id="modal_sinpuesto" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class='modal-header'>
+                <h5 class="modal-title">Sin puesto de votacion</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              </div>
+              <div class="modal-body table-responsive p-0" style="height:450px;overflow-y: auto;">
+                <table class="table table-striped table-valign-middle">
+                    <thead>
+                    <tr>
+                      <th>Documento</th>
+                      <th>Nombre</th>
+                      <th>Telefono</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="votante in this.dataSinpuesto">
+                      <td v-text="votante.documento"></td>
+                      <td v-text="votante.nombre"></td>
+                      <td v-text="votante.telefono"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+              </div>
+          </div>
+        </div>
+    </div>
+
     <div class="row">
       <div class="col-sm-6">
         <h3>Estadisticas Compaña</h3>
@@ -13,7 +44,7 @@
       <div class="col-md-6">
       <div class="card">
           <div class="card-header no-border">
-            <h3 class="card-title">Personas con Puesto de votacion vs Personas sin puesto de votacion</h3>
+            <h3 class="card-title">Personas con puesto de votacion vs sin puesto de votacion</h3>
           </div>
           <!-- /.card-header -->
           <div class="card-body">
@@ -28,18 +59,16 @@
                 <ul class="chart-legend clearfix">
                   <li>
                       <i class="fa fa-circle-o text-grey"></i>
-                      Con puesto de votacion
-                      <span class="float-right" v-text="this.infoCenso.censo"></span>
+                      Con puesto  <span class="float-right" v-text="this.infoCenso.censo"></span>
                   </li>
                   <li>
                       <i class="fa fa-circle-o text-grey"></i>
-                      Sin puesto de votacion
-                      <span class="float-right" v-text="this.infoCenso.sincenso"></span>
+                      Sin puesto  <span class="float-right" v-text="this.infoCenso.sincenso"></span>
+                      <a href="#" v-on:click.prevent="vatantesSinPuesto()">(ver)</a>
                   </li>
                   <li>
                       <i class="fa fa-circle-o text-grey"></i>
-                      Total
-                      <span class="float-right" v-text="this.infoCenso.total"></span>
+                      Total  <span class="float-right" v-text="this.infoCenso.total"></span>
                   </li>
                 </ul>
               </div>
@@ -318,7 +347,8 @@
             dataComuna3 :[],
             dataComuna4 :[],
             dataComuna5 :[],
-            dataPublicidad : []
+            dataPublicidad : [],
+            dataSinpuesto :  [],
           }
         },methods : {
           getDashboard: function(){
@@ -335,6 +365,7 @@
           },
           drawGrafCenso : function (data){
               var total = parseInt(data.censados)+parseInt(data.sincenso);
+              
               Morris.Donut({
                 element: 'dash-grafcenso',
                 data: [
@@ -346,7 +377,7 @@
                       'blue',
                 ],
                 formatter: function (value, data) { 
-                  return Math.floor(value/total*100) + '%'; 
+                  return Math.floor(total>0 ? value/total*100 : 0) + '%'; 
                 },
                 resize : true
               });
@@ -370,7 +401,7 @@
                     'blue',
               ],
               formatter: function (value, data) { 
-                return Math.floor(value/total*100) + '%'; 
+                return Math.floor(total>0 ? value/total*100 : 0) + '%'; 
               },
               resize : true
             });
@@ -412,7 +443,7 @@
               data: this.dataComuna1,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
@@ -423,7 +454,7 @@
               data: this.dataComuna2,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
@@ -434,7 +465,7 @@
               data: this.dataComuna3,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
@@ -445,7 +476,7 @@
               data: this.dataComuna4,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
@@ -456,7 +487,7 @@
               data: this.dataComuna5,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
@@ -475,10 +506,20 @@
               data: this.dataPublicidad,
               xkey: 'y',
               ykeys: ['a'],
-              labels: ['Series A'],
+              labels: ['Personas'],
               horizontal: true,
               stacked: true,
               resize : true
+            });
+          },
+          vatantesSinPuesto:function(){
+            $('#modal_sinpuesto').modal('show');
+            var url =this.baseUrl+'/votantes/votantessinpuesto';
+            let inst=this;
+            this.dataSinpuesto=[];
+            axios.post(url,{}).then(response =>{
+              this.dataSinpuesto=response.data.dataSinpuesto;
+            }).catch(error =>{
             });
           }
         }

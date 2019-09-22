@@ -11,14 +11,14 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 let routes  =[
-  {path : '/',name:'home',component:require('./components/HomeComponent.vue').default},
-  {path : '/home',name:'home',component:require('./components/HomeComponent.vue').default},
-  {path : '/home2',name:'home',component:require('./components/Home2Component.vue').default},
+  {path : '/',name:'dash',component:require('./components/DashGestionComponent.vue').default},
+  {path : '/dash',name:'dash',component:require('./components/DashGestionComponent.vue').default},
+  {path : '/dash2',name:'dash2',component:require('./components/DashVotantesComponent.vue').default},
   {path : '/votante',name:'votante',component:require('./components/VotanteListaComponent.vue').default},
   {path : '/nuevo-votante',name:'nuevo-votante',component:require('./components/VotanteNuevoComponent.vue').default},
-  {path : '/lideres',name:'lideres',component:require('./components/LideresListaComponent.vue').default},
-  {path : '/example',name:'example',component:require('./components/ExampleComponent.vue').default},
-  {path : '/example2',name:'example2',component:require('./components/Example2Component.vue').default}
+  {path : '/editar-votante/:id',name:'editar-votante',component:require('./components/VotanteEditarComponent.vue').default},
+  {path : '/lideres',name:'lideres',component:require('./components/LideresListaComponent.vue').default}
+
   
 ];
 

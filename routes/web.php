@@ -18,13 +18,20 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::post('votantes/guardar', 'VotantesController@guardar');
-Route::post('votantes/lideres', 'VotantesController@getLideres');
-Route::post('votantes/lista', 'VotantesController@getListaVotantes');
-Route::post('votantes/listadoLideres', 'VotantesController@getListaLideres');
-Route::post('votantes/listadoBarrios', 'VotantesController@getListaBarrios');
-Route::post('votantes/censo', 'VotantesController@getCenso');
-Route::post('votantes/infografLider', 'VotantesController@getInfoGrafLider');
 
 Route::post('votantes/getDashboard', 'VotantesController@getDashboard');
 Route::post('votantes/getDashboard2', 'VotantesController@getDashboard2');
+Route::post('votantes/puestos', 'VotantesController@getPuestos');
+Route::post('votantes/barrios', 'VotantesController@getBarrios');
+Route::post('votantes/mesas', 'VotantesController@getMesas');
+Route::post('votantes/votacionpuesto', 'VotantesController@getVotacionPuesto');
+Route::post('votantes/votantes', 'VotantesController@getListaVotantes');
+Route::post('votantes/guardar', 'VotantesController@guardar');
+Route::post('votantes/lideres', 'VotantesController@getLideres');
+Route::post('votantes/listadoLideres', 'VotantesController@getListaLideres');
+Route::post('votantes/votanesLider', 'VotantesController@getVotantesLider');
+Route::post('votantes/votantessinpuesto', 'VotantesController@getVotantesSinPuesto');
+Route::post('votantes/borrarvotante', 'VotantesController@deleteVotante');
+Route::post('votantes/editarvotante', 'VotantesController@editarVotante');
+Route::post('votantes/actualizar', 'VotantesController@actualizar');
+Route::post('votantes/votconmesas', 'VotantesController@getVotantesconMesas');

@@ -9,7 +9,7 @@
             <div class="text-center">
             <a href="#" v-on:click.prevent="setRedirect('perfil')">
                 <img class="profile-user-img img-fluid img-circle"
-                    src="http://localhost/votantes/public/img/logo.jpg"
+                    src="{{ asset('img/logo.jpg') }}"
                     alt="User avatar">
             </a>
             </div>
@@ -25,13 +25,13 @@
 
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item active">
-                    <router-link to="/home" class="nav-link">
+                    <router-link to="/dash" class="nav-link">
                     <i class="fa fa-bar-chart"></i>
                     <span>Estadisticas Compana</span>
                     </router-link>
                 </li>
                 <li class="nav-item active">
-                    <router-link to="/home2" class="nav-link">
+                    <router-link to="/dash2" class="nav-link">
                     <i class="fa fa-bar-chart"></i>
                     <span>Estadisticas Votacion</span>
                     </router-link>
@@ -66,7 +66,7 @@
 
         <div class="card card-widget card-nav-user">
               <div class="card-body">
-                <img class="img-fluid pad" src="http://localhost/votantes/public/img/marcacion.jpg" alt="Photo">
+                <img class="img-fluid pad" src="{{ asset('img/marcacion.jpg') }}" alt="Photo">
               </div>
               
             </div>
