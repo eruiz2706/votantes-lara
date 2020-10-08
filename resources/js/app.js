@@ -38,6 +38,7 @@ const router  =new VueRouter({
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 //Vue.component('app-component', require('./components/AppComponent.vue').default);
 Vue.component('app-component', require('./components/AppComponent.vue').default);
+Vue.component('app-chaman', require('./components/DashGestionComponent.vue').default);
 Vue.component('vue-select', require("vue-select2"));
 
 /**
